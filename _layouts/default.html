@@ -23,15 +23,20 @@
           {% endif %}
         </section>
       </div>
+
+      <div id="navcontainer">
+        <ul id="navlist">
+        {% for p in site.pages %}
+          <li>
+            <a href="{{ p.url }}">{{ p.title }}</a>
+          </li>
+        {% endfor %}
+        </ul>
+      </div>
+    
+    
     </header>
 
-    <ul>
-      {% for p in site.pages %}
-        <li>
-          <a href="{{ p.url }}">{{ p.title }}</a>
-        </li>
-      {% endfor %}
-    </ul>
 
     
     <div class="container">
