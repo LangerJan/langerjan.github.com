@@ -1,0 +1,172 @@
+diff -rupN msieve-1.51/common/driver.c msieve-1.51_mod/common/driver.c
+--- msieve-1.51/common/driver.c	2013-02-17 15:21:59.000000000 +0100
++++ msieve-1.51_mod/common/driver.c	2013-02-18 01:18:44.550526922 +0100
+@@ -130,8 +130,7 @@ static uint32 msieve_run_core(msieve_obj
+ 			/* if the tiny factoring routines failed, then
+ 			   the heavy artillery routines would also fail
+ 			   (the input is too small). Just give up */
+-
+-			printf("error: tiny factoring failed\n");
++			obj->result_code = TINY_FACTORING_FAILED;
+ 			return 0;
+ 		}
+ 	}
+@@ -170,12 +169,14 @@ void msieve_run(msieve_obj *obj) {
+ 	factor_list_t factor_list;
+ 	time_t start_time;
+ 
++	obj->result_code = SUCCESS;
++
+ 	/* convert the input number to an mp_t */
+ 
+ 	status = evaluate_expression(obj->input, &n);
+ 	if (status < 0 || mp_is_zero(&n)) {
+-		printf("error %d converting '%s'\n", status, obj->input);
+ 		obj->flags |= MSIEVE_FLAG_FACTORIZATION_DONE;
++		obj->result_code = ERROR_CONVERTING_INPUT;
+ 		return;
+ 	}
+ 	n_string = mp_sprintf(&n, 10, obj->mp_sprintf_buf);
+@@ -261,7 +262,7 @@ void msieve_run(msieve_obj *obj) {
+ 				break;
+ 			}
+ 		}
+-		if (status == 0 || (obj->flags & MSIEVE_FLAG_STOP_SIEVING))
++		if (obj->result_code != SUCCESS || status == 0 || (obj->flags & MSIEVE_FLAG_STOP_SIEVING))
+ 			break;
+ 	}
+ 
+diff -rupN msieve-1.51/common/lanczos/lanczos.c msieve-1.51_mod/common/lanczos/lanczos.c
+--- msieve-1.51/common/lanczos/lanczos.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/common/lanczos/lanczos.c	2013-02-18 00:02:00.343695000 +0100
+@@ -1520,7 +1520,13 @@ uint64 * block_lanczos(msieve_obj *obj,
+ 	if (max_ncols <= max_nrows) {
+ 		logprintf(obj, "matrix needs more columns than rows; "
+                  "try adding 2-3%% more relations\n");
+-		exit(-1);
++		obj->result_code = MATRIX_COL_ROWS;
++		// Set results to 0 / NULL to make sure nobody uses
++		// anything from this failed function call.
++		// As for now, this method returns a guaranteed non-NULL
++		// pointer, so check for that.
++		*num_deps_found = 0;
++		return NULL;
+ 	}
+ 
+ 	/* optionally remove the densest rows of the matrix, and
+diff -rupN msieve-1.51/demo.c msieve-1.51_mod/demo.c
+--- msieve-1.51/demo.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/demo.c	2013-02-18 00:58:59.976652000 +0100
+@@ -231,6 +231,26 @@ void factor_integer(char *buf, uint32 fl
+ 		exit(0);
+ 	}
+ 
++	switch(g_curr_factorization->result_code){
++		case SUCCESS:
++			printf("Factorization succeeded\n");
++			break;
++		case ERROR_CONVERTING_INPUT:
++			printf("Error converting input '%s'\n", int_start);
++			break;
++		case TINY_FACTORING_FAILED:
++			printf("Error: Tiny factoring failed\n");
++			break;
++		case MATRIX_COL_ROWS:
++			printf("matrix needs more columns than rows; try adding 2-3%% more relations\n");
++			break;
++		case ERROR:
++		default:
++			printf("Error: Something went horribly wrong.\n");
++			break;
++	}
++
++
+ 	/* If no logging is specified, at least print out the
+ 	   factors that were found */
+ 
+diff -rupN msieve-1.51/gnfs/gnfs.c msieve-1.51_mod/gnfs/gnfs.c
+--- msieve-1.51/gnfs/gnfs.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/gnfs/gnfs.c	2013-02-18 00:34:22.297325000 +0100
+@@ -164,9 +164,13 @@ uint32 factor_gnfs(msieve_obj *obj, mp_t
+ 	if (obj->flags & MSIEVE_FLAG_NFS_LA)
+ 		nfs_solve_linear_system(obj, n);
+ 		
+-	if (obj->flags & MSIEVE_FLAG_NFS_SQRT)
+-		factor_found = nfs_find_factors(obj, n, factor_list);
+-
++	if (obj->result_code != SUCCESS){
++		if (obj->flags & MSIEVE_FLAG_NFS_SQRT)
++			factor_found = nfs_find_factors(obj, n, factor_list);
++	}
++	else {
++		factor_found = 0;
++	}
+ finished:
+ 	mpz_poly_free(&rat_poly);
+ 	mpz_poly_free(&alg_poly);
+diff -rupN msieve-1.51/include/common.h msieve-1.51_mod/include/common.h
+--- msieve-1.51/include/common.h	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/include/common.h	2013-02-18 00:05:33.612753000 +0100
+@@ -291,6 +291,7 @@ uint32 merge_relations(uint32 *merge_arr
+ 		  uint32 *src1, uint32 n1,
+ 		  uint32 *src2, uint32 n2);
+ 
++/* Returns NULL on error. Check obj->result_code */
+ uint64 * block_lanczos(msieve_obj *obj,
+ 			uint32 nrows, uint32 max_nrows, uint32 start_row,
+ 			uint32 num_dense_rows,
+diff -rupN msieve-1.51/include/msieve.h msieve-1.51_mod/include/msieve.h
+--- msieve-1.51/include/msieve.h	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/include/msieve.h	2013-02-18 01:28:06.801314967 +0100
+@@ -90,6 +90,19 @@ enum msieve_flags {
+ 	MSIEVE_FLAG_NFS_LA_RESTART = 0x2000,/* restart the NFS linear algbra */
+ 	MSIEVE_FLAG_DEEP_ECM = 0x4000    /* perform nontrivial-size ECM */
+ };
++
++enum msieve_result {
++	SUCCESS,                    	/* No errors occured. */
++	ERROR_CONVERTING_INPUT,		/* Error converting the input number */
++	TINY_FACTORING_FAILED,		/* Tiny factoring routines failed. 
++					   Factors found via trial division might still be usable */
++	MATRIX_COL_ROWS,		/* Matrix needs more columns than rows, 
++					   try adding 2-3% more relations.
++					   (Re-run with new seed works sometimes too) 
++					   Field *factors is incomplete */
++	ERROR				/* General error.
++					   Field *factors is incomplete */
++};
+ 	
+ /* structure encapsulating the savefile used in a factorization */
+ 
+@@ -156,6 +169,8 @@ typedef struct {
+ 	char *mp_sprintf_buf;    /* scratch space for printing big integers */
+ 
+ 	const char *nfs_args;   /* arguments for NFS */
++
++	enum msieve_result result_code;		/* Factorization result code */
+ } msieve_obj;
+ 
+ msieve_obj * msieve_obj_new(char *input_integer,
+diff -rupN msieve-1.51/mpqs/mpqs.c msieve-1.51_mod/mpqs/mpqs.c
+--- msieve-1.51/mpqs/mpqs.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/mpqs/mpqs.c	2013-02-18 00:23:43.466157000 +0100
+@@ -111,7 +111,7 @@ uint32 factor_mpqs(msieve_obj *obj, mp_t
+ 	solve_linear_system(obj, fb_size, &bitfield, 
+ 			relation_list, cycle_list, &num_cycles);
+ 
+-	if (bitfield != NULL && num_cycles > 0) {
++	if (obj->result_code == SUCCESS && bitfield != NULL && num_cycles > 0) {
+ 		factor_found = find_factors(obj, n, factor_base, fb_size, 
+ 					cycle_list, num_cycles, 
+ 					relation_list, bitfield, 
+@@ -121,7 +121,9 @@ uint32 factor_mpqs(msieve_obj *obj, mp_t
+ 
+ 	free(factor_base);
+ 	free(bitfield);
+-	free_cycle_list(cycle_list, num_cycles);
++	if (obj->result_code == SUCCESS){
++		free_cycle_list(cycle_list, num_cycles);
++	}
+ 	qs_free_relation_list(relation_list, num_relations);
+ 	free(poly_list);
+ 	free(poly_a_list);

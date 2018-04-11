@@ -1,0 +1,299 @@
+diff -rupN msieve-1.51/common/driver.c msieve-1.51_mod/common/driver.c
+--- msieve-1.51/common/driver.c	2013-02-17 15:21:59.000000000 +0100
++++ msieve-1.51_mod/common/driver.c	2013-02-20 11:59:28.636927949 +0100
+@@ -130,8 +130,7 @@ static uint32 msieve_run_core(msieve_obj
+ 			/* if the tiny factoring routines failed, then
+ 			   the heavy artillery routines would also fail
+ 			   (the input is too small). Just give up */
+-
+-			printf("error: tiny factoring failed\n");
++			obj->result_code = TINY_FACTORING_FAILED;
+ 			return 0;
+ 		}
+ 	}
+@@ -170,12 +169,14 @@ void msieve_run(msieve_obj *obj) {
+ 	factor_list_t factor_list;
+ 	time_t start_time;
+ 
++	obj->result_code = SUCCESS;
++
+ 	/* convert the input number to an mp_t */
+ 
+ 	status = evaluate_expression(obj->input, &n);
+ 	if (status < 0 || mp_is_zero(&n)) {
+-		printf("error %d converting '%s'\n", status, obj->input);
+ 		obj->flags |= MSIEVE_FLAG_FACTORIZATION_DONE;
++		obj->result_code = ERROR_CONVERTING_INPUT;
+ 		return;
+ 	}
+ 	n_string = mp_sprintf(&n, 10, obj->mp_sprintf_buf);
+@@ -261,7 +262,7 @@ void msieve_run(msieve_obj *obj) {
+ 				break;
+ 			}
+ 		}
+-		if (status == 0 || (obj->flags & MSIEVE_FLAG_STOP_SIEVING))
++		if (obj->result_code != SUCCESS || status == 0 || (obj->flags & MSIEVE_FLAG_STOP_SIEVING))
+ 			break;
+ 	}
+ 
+@@ -576,10 +577,11 @@ uint32 factor_list_add(msieve_obj *obj,
+ void free_cycle_list(la_col_t *cycle_list, uint32 num_cycles) {
+ 
+ 	uint32 i;
+-
+-	for (i = 0; i < num_cycles; i++)
+-		free(cycle_list[i].cycle.list);
+-	free(cycle_list);
++	if(cycle_list){
++		for (i = 0; i < num_cycles; i++)
++			free(cycle_list[i].cycle.list);
++		free(cycle_list);
++	}
+ }
+ 
+ /*------------------------------------------------------------------*/
+diff -rupN msieve-1.51/common/lanczos/lanczos.c msieve-1.51_mod/common/lanczos/lanczos.c
+--- msieve-1.51/common/lanczos/lanczos.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/common/lanczos/lanczos.c	2013-02-18 00:02:00.343695000 +0100
+@@ -1520,7 +1520,13 @@ uint64 * block_lanczos(msieve_obj *obj,
+ 	if (max_ncols <= max_nrows) {
+ 		logprintf(obj, "matrix needs more columns than rows; "
+                  "try adding 2-3%% more relations\n");
+-		exit(-1);
++		obj->result_code = MATRIX_COL_ROWS;
++		// Set results to 0 / NULL to make sure nobody uses
++		// anything from this failed function call.
++		// As for now, this method returns a guaranteed non-NULL
++		// pointer, so check for that.
++		*num_deps_found = 0;
++		return NULL;
+ 	}
+ 
+ 	/* optionally remove the densest rows of the matrix, and
+diff -rupN msieve-1.51/demo.c msieve-1.51_mod/demo.c
+--- msieve-1.51/demo.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/demo.c	2013-02-20 16:59:18.424208866 +0100
+@@ -231,6 +231,29 @@ void factor_integer(char *buf, uint32 fl
+ 		exit(0);
+ 	}
+ 
++	switch(g_curr_factorization->result_code){
++		case SUCCESS:
++			printf("Factorization succeeded\n");
++			break;
++		case ERROR_CONVERTING_INPUT:
++			printf("Error converting input '%s'\n", int_start);
++			break;
++		case TINY_FACTORING_FAILED:
++			printf("Error: Tiny factoring failed\n");
++			break;
++		case MATRIX_COL_ROWS:
++			printf("matrix needs more columns than rows; try adding 2-3%% more relations\n");
++			break;
++		case ERROR_MATRIX_CORRUPT:
++			printf("Error: Matrix is corrupt; Linear Algebra skipped\n");
++			break;
++		case ERROR:
++		default:
++			printf("Error: Something went horribly wrong.\n");
++			break;
++	}
++
++
+ 	/* If no logging is specified, at least print out the
+ 	   factors that were found */
+ 
+@@ -602,3 +625,4 @@ int main(int argc, char **argv) {
+ #endif
+ 	return 0;
+ }
++
+diff -rupN msieve-1.51/gnfs/gnfs.c msieve-1.51_mod/gnfs/gnfs.c
+--- msieve-1.51/gnfs/gnfs.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/gnfs/gnfs.c	2013-02-18 00:34:22.297325000 +0100
+@@ -164,9 +164,13 @@ uint32 factor_gnfs(msieve_obj *obj, mp_t
+ 	if (obj->flags & MSIEVE_FLAG_NFS_LA)
+ 		nfs_solve_linear_system(obj, n);
+ 		
+-	if (obj->flags & MSIEVE_FLAG_NFS_SQRT)
+-		factor_found = nfs_find_factors(obj, n, factor_list);
+-
++	if (obj->result_code != SUCCESS){
++		if (obj->flags & MSIEVE_FLAG_NFS_SQRT)
++			factor_found = nfs_find_factors(obj, n, factor_list);
++	}
++	else {
++		factor_found = 0;
++	}
+ finished:
+ 	mpz_poly_free(&rat_poly);
+ 	mpz_poly_free(&alg_poly);
+diff -rupN msieve-1.51/include/common.h msieve-1.51_mod/include/common.h
+--- msieve-1.51/include/common.h	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/include/common.h	2013-02-18 00:05:33.612753000 +0100
+@@ -291,6 +291,7 @@ uint32 merge_relations(uint32 *merge_arr
+ 		  uint32 *src1, uint32 n1,
+ 		  uint32 *src2, uint32 n2);
+ 
++/* Returns NULL on error. Check obj->result_code */
+ uint64 * block_lanczos(msieve_obj *obj,
+ 			uint32 nrows, uint32 max_nrows, uint32 start_row,
+ 			uint32 num_dense_rows,
+diff -rupN msieve-1.51/include/msieve.h msieve-1.51_mod/include/msieve.h
+--- msieve-1.51/include/msieve.h	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/include/msieve.h	2013-02-20 12:59:22.330748131 +0100
+@@ -90,6 +90,23 @@ enum msieve_flags {
+ 	MSIEVE_FLAG_NFS_LA_RESTART = 0x2000,/* restart the NFS linear algbra */
+ 	MSIEVE_FLAG_DEEP_ECM = 0x4000    /* perform nontrivial-size ECM */
+ };
++
++enum msieve_result {
++	SUCCESS,                    	/* No errors occured. */
++	ERROR_CONVERTING_INPUT,		/* Error converting the input number */
++	TINY_FACTORING_FAILED,		/* Tiny factoring routines failed. 
++					   Factors found via trial division might still be usable */
++	MATRIX_COL_ROWS,		/* Matrix needs more columns than rows, 
++					   try adding 2-3% more relations.
++					   (Re-run with new seed works sometimes too) 
++					   Field *factors is incomplete */
++	ERROR_MATRIX_CORRUPT,		/* Matrix is corrupt, linear algebra skipped.
++					   Re-rolling the seeds doesn't help here.*/
++	GENERAL_REROLL_ERROR,		/* Some error happened. 
++					   Re-roll the seeds and try again, it might help. */
++	ERROR				/* General error.
++					   Field *factors is incomplete */
++};
+ 	
+ /* structure encapsulating the savefile used in a factorization */
+ 
+@@ -156,6 +173,8 @@ typedef struct {
+ 	char *mp_sprintf_buf;    /* scratch space for printing big integers */
+ 
+ 	const char *nfs_args;   /* arguments for NFS */
++
++	enum msieve_result result_code;		/* Factorization result code */
+ } msieve_obj;
+ 
+ msieve_obj * msieve_obj_new(char *input_integer,
+diff -rupN msieve-1.51/mpqs/gf2.c msieve-1.51_mod/mpqs/gf2.c
+--- msieve-1.51/mpqs/gf2.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/mpqs/gf2.c	2013-02-20 15:20:31.518818930 +0100
+@@ -47,6 +47,7 @@ void solve_linear_system(msieve_obj *obj
+ 
+ 	if (ncols == 0) {
+ 		logprintf(obj, "matrix is corrupt; skipping linear algebra\n");
++		obj->result_code = ERROR_MATRIX_CORRUPT;
+ 		free(cols);
+ 		*num_cycles = 0;
+ 		return;
+diff -rupN msieve-1.51/mpqs/mpqs.c msieve-1.51_mod/mpqs/mpqs.c
+--- msieve-1.51/mpqs/mpqs.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/mpqs/mpqs.c	2013-02-20 12:31:41.466512349 +0100
+@@ -101,7 +101,8 @@ uint32 factor_mpqs(msieve_obj *obj, mp_t
+ 		   &cycle_list, &num_cycles);
+ 
+ 	free(modsqrt_array);
+-	if (relation_list == NULL || cycle_list == NULL ||
++
++	if (obj->result_code != SUCCESS || relation_list == NULL || cycle_list == NULL ||
+ 	    cycle_list == NULL || poly_a_list == NULL || poly_list == NULL) {
+ 
+ 		free(factor_base);
+@@ -111,7 +112,7 @@ uint32 factor_mpqs(msieve_obj *obj, mp_t
+ 	solve_linear_system(obj, fb_size, &bitfield, 
+ 			relation_list, cycle_list, &num_cycles);
+ 
+-	if (bitfield != NULL && num_cycles > 0) {
++	if (obj->result_code == SUCCESS && bitfield != NULL && num_cycles > 0) {
+ 		factor_found = find_factors(obj, n, factor_base, fb_size, 
+ 					cycle_list, num_cycles, 
+ 					relation_list, bitfield, 
+@@ -121,7 +122,9 @@ uint32 factor_mpqs(msieve_obj *obj, mp_t
+ 
+ 	free(factor_base);
+ 	free(bitfield);
+-	free_cycle_list(cycle_list, num_cycles);
++	if (obj->result_code == SUCCESS){
++		free_cycle_list(cycle_list, num_cycles);
++	}
+ 	qs_free_relation_list(relation_list, num_relations);
+ 	free(poly_list);
+ 	free(poly_a_list);
+diff -rupN msieve-1.51/mpqs/sieve.c msieve-1.51_mod/mpqs/sieve.c
+--- msieve-1.51/mpqs/sieve.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/mpqs/sieve.c	2013-02-19 22:27:22.103332639 +0100
+@@ -438,6 +438,7 @@ void do_sieving(msieve_obj *obj, mp_t *n
+ 	relations_found = do_sieving_internal(&conf, max_relations,
+ 						core_sieve_fcn);
+ 	TIME2(total_time)
++	if(obj->result_code != SUCCESS){return;}
+ 
+ 	PRINT_TIME(total_time);
+ 	PRINT_TIME(base_poly_time);
+@@ -610,6 +611,7 @@ static uint32 do_sieving_internal(sieve_
+ 		num_relations < max_relations) {
+ 
+ 		collect_relations(conf, update, core_sieve_fcn);
++		if(conf->obj->result_code != SUCCESS){return 0;};
+ 
+ 		num_relations = conf->num_relations + 
+ 				conf->num_cycles +
+@@ -676,6 +678,9 @@ static void collect_relations(sieve_conf
+ 
+ 			relations_found += core_sieve_fcn(conf, i, 
+ 							curr_num_poly);
++
++			if(conf->obj->result_code != SUCCESS){return;};
++
+ 			i += curr_num_poly;
+ 
+ 			/* see if anybody wants sieving to stop. If num_poly
+@@ -707,7 +712,9 @@ uint32 check_sieve_val(sieve_conf_t *con
+ 	/* check a single sieve value for smoothness. This
+ 	   routine is called quite rarely but is very compu-
+ 	   tationally intensive. Returns 1 if the input sieve
+-	   value is completely factored, 0 otherwise. 
++	   value is completely factored, 0 otherwise.
++
++	   **Hotfix: Check, in any case, conf->obj->result_code for errors
+ 	   
+ 	   There are a lot of things in this routine that are
+ 	   not explained very well in references. The quadratic 
+@@ -948,6 +955,16 @@ uint32 check_sieve_val(sieve_conf_t *con
+ 			do {
+ 				fb_offsets[num_factors++] = i;
+ 				mp_divrem_1(&res, prime, &res);
++				/*
++				Hotfix for: http://www.mersenneforum.org/showthread.php?p=330107#post330107
++				If res is zero, this loop will run indefinitely.
++				This error-handling should be replaced with something more reasonable in
++				the future.
++				 */
++				if(mp_is_zero(&res)){
++					conf->obj->result_code = GENERAL_REROLL_ERROR;
++					return 0;
++				}
+ 				j = mp_mod_1(&res, prime);
+ 			} while (j == 0);
+ 		}
+diff -rupN msieve-1.51/mpqs/sieve_core.c msieve-1.51_mod/mpqs/sieve_core.c
+--- msieve-1.51/mpqs/sieve_core.c	2013-02-17 15:22:00.000000000 +0100
++++ msieve-1.51_mod/mpqs/sieve_core.c	2013-02-19 22:27:55.407497786 +0100
+@@ -258,6 +258,8 @@ static uint32 scan_sieve_block(sieve_con
+ 						cutoff1 + 257 - bits,
+ 						a, b, c, poly_index,
+ 						hashtable);
++				if(conf->obj->result_code != SUCCESS){return 0;};
++
+ 				TIME2(tf_total_time)
+ 			}
+ 		}
+@@ -577,6 +579,8 @@ uint32 ROUTINE_NAME(sieve_conf_t *conf,
+ 							block_start, cutoff1,
+ 							poly_index, 
+ 							buckets + block);
++			if(conf->obj->result_code != SUCCESS){return 0;};
++
+ 		}
+ 
+ 		/* update the roots for each of the small factor
