@@ -16,12 +16,7 @@
         <h1>Jan Gampe</h1>
         <h2>{{ site.description | default: site.github.project_tagline }}</h2>
       </div>
-
-      
-      {% assign url_parts = page.url | split: '/' %}
-      {% assign url_parts_size = url_parts | size %}
-      {% assign rm = url_parts | last %}
-      {% assign base_url = page.url | replace: rm %}      
+   
       
       <div id="container">
         <ul id="navlist">
