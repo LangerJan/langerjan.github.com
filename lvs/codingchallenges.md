@@ -1,2 +1,0 @@
-# Coding Challenges
-Foo
