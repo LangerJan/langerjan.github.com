@@ -2,10 +2,10 @@
 
 Angaben gemäß § 5 TMG:
 
-Jan Gampe
-An der Prall 9
-55124 Mainz
-
+Jan Gampe  
+An der Prall 9  
+55124 Mainz  
+  
 Email: webmaster@jangampe.de
 Tel.: +49 151 10579673
 
