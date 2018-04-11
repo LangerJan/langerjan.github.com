@@ -25,6 +25,15 @@
       </div>
     </header>
 
+    <ul>
+      {% for p in site.pages %}
+        <li>
+          <a href="{{ p.url }}">{{ p.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    
     <div class="container">
       <section id="main_content">
         {{ content }}
