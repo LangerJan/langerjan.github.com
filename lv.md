@@ -1,7 +1,7 @@
 # Lehrveranstaltungen
 
 ## Aktuelles Semester
-* Coding Challenges
+* [Coding Challenges](./lvs/codingchallenges.md)
 
 ## Vergangene Semester
 
