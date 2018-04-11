@@ -3,7 +3,7 @@
 Aktuelle (und weniger aktuelle) Projekte von und mit mir
 
 ## Thesis
-Meine Masterthesis "Parallele Algorithmen und die ABC Vermutung
+Meine Masterthesis [Parallele Algorithmen und die ABC Vermutung](../_posts/2018-04-11-thesis.md)
 
 ## Qnoten
 Ein Programm zur Abholung und Verwaltung von Hochschulnoten
