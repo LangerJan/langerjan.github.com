@@ -3,3 +3,5 @@ theme: jekyll-theme-hacker
 title: Home
 description: About everything
 show_downloads: false
+
+include: ['_pages']
