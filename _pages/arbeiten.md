@@ -9,10 +9,10 @@ Meine Masterthesis [Parallele Algorithmen und die ABC Vermutung](../_posts/2018-
 Ein Programm zur Abholung und Verwaltung von Hochschulnoten
 
 ## ShUND
-ShUND (Shared Universal Network Diagram Editor) ist ein Programm zum verteilten Arbeiten an Aktivitätsdiagrammen.
+[ShUND](http://www.shund.de) (Shared Universal Network Diagram Editor) ist ein Programm zum verteilten Arbeiten an Aktivitätsdiagrammen.
 
 ## Publikationen
-Unter meiner Beteiligung Geschriebenes
+[Unter meiner Beteiligung Geschriebenes](../_posts/2018-04-11-publikationen.md)
 
 ## Github
-Meine Sammlung quelloffener Projekte auf Github
+[Meine Sammlung quelloffener Projekte auf Github](https://github.com/langerjan)
