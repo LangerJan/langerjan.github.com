@@ -1,0 +1,74 @@
+==================================================================
+https://keybase.io/langerjan
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of http://www.jangampe.de
+  * I am langerjan (https://keybase.io/langerjan) on keybase.
+  * I have a public key with fingerprint F3A5 1754 47BF A847 10BC  2792 0603 5798 247C 13EF
+
+To do so, I am signing this object:
+
+{
+    "body": {
+        "key": {
+            "eldest_kid": "010117d03d2b84776ac8ead38d1d8370714274512cf4f13678c31b69b1140dd3b3c40a",
+            "fingerprint": "f3a5175447bfa84710bc279206035798247c13ef",
+            "host": "keybase.io",
+            "key_id": "06035798247c13ef",
+            "kid": "010117d03d2b84776ac8ead38d1d8370714274512cf4f13678c31b69b1140dd3b3c40a",
+            "uid": "f69c54dcf608d07d9e2fead73dd37819",
+            "username": "langerjan"
+        },
+        "service": {
+            "hostname": "www.jangampe.de",
+            "protocol": "http:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+    },
+    "ctime": 1455313427,
+    "expire_in": 157680000,
+    "prev": "758e8b78b226a53c45c35c872306f4c7eb5177f085a1f17951f4317e29227a1d",
+    "seqno": 5,
+    "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: GnuPG v1
+
+owGtkntQVFUcx5flkZArzxook7wjRAzQfe65lzGCNDEeTaJGDhPrfZy7XHbZve0u
+SxvxSEQBY1IrBzBCJ9IGMnOKRigZmoHJSEaDEAdmbMCy5aGkgZqU27lkf/Vv558z
+53c+3+/5fc85+w3+Or1fkH9+07o3Iuf9vp8WdC/15j1Sjgl2yYOllmMWuDxBqwSd
+LpNFkbBUDCdwggASTkmkwNIAGHmRhbxEsRIhsRTAAUGTgGYIUpRpmaCMgBUpQjBy
+AkHQuCRRAiXSOI8lYbJiM0OH6lBsLmQrUzxDAIamgSDzyJfABZEEHIkbcYoBHEvS
+QCQoKCNhkd2pKVBzAu+EKYod1dDC9E97/+X/575Ll+1kIycytCTKRpyVcCBxkJSR
+HaAQCliC00AndNj4EohoK69lLeZtWEUShspuRYTazWpR7iNlZWUpCDDzJSpMkSDS
+qw67yy7arWizyOVSUzWty6Muw1Aw3bcxCYpNQleJBG7ocCp2G5ZKIFJ0KZovQTMM
+RVAoWxIGX1MVBzQpGsEAI4ujoR0D3cgSMCwsYAXACiRp5BmUlhEpRmQBSeFGmRYB
+FNADARlnGZ6QCcAxhExTBIAkR5KAJyRMS/aqzY6lMqhP3ow8nYrZxrtKHRCrCKnX
+rw7Q+el1QYF67ZPpQoLD/v15aS2hvsyG+pwn+Jhuc8bkbPHQ6Dtb2n7vH+y6A+Oa
+5es9Fe/9yXGb792qfqh8W0h7tjvbUh2ZuSIBvFjz1MTqviifpWnVh8Pel4WxZ2f9
+x1Y+LNSVR2dNBEQO1P7QefObCvx2UsSFJX741N7en9mdyXON+OW7Z7Zt9BSG5bLB
+xU8/Z6n6qXlKXXOUq9xkuDRRv3K7slbofvwxU9zlvIa6F0aiPgnTn+2d/m5r8Tz3
+VejGswW1F6MKc5jPvJV787O22sjEqMHFoODtp8+8Hh9/cGKutaW10ZFU88VSoPm0
+t3Fsp9/4XEcl/umA++ulmh1H3z5Y/ORS3HXvVIGqXorc9/y7AQvJZLRrz6GhW1ec
+KbHHH/grlpyeH1n7W/Cxzv5N+t5HDwfU3GzZ8uOu99tmR+t2n8jIVcIMhwrvWHPT
+XhlzPWg3f3ulL/OXGHfojfDaXQfirQXNDQmrpsu6FtfXts7sqzd9YIgYKcmOvTES
+PX3t5LmenPCqdENJkQ47sL90YaYyMHIh5vxwMtW+KKq7mxLSl7LuxeqiYxL15z3l
+a1oG3vL1rLsdkJG9cGy9Jb3iXIdv4njn5hOej/bsGCDf7OuaOdJxuPNueN6Fj0cN
+FofqvbhqeGp+g2c8u7tq3nhy0HPVmu8bT3vGeioicarf9seXltLqhBXtn48H9gde
+K0yv7j0ycpXyTsZO/trYNuT7Gw==
+=NVvn
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/langerjan
+
+==================================================================
+
