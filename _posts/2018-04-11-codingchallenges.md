@@ -14,3 +14,9 @@ Coding Challenges ist ein Vertiefungsfach mit folgenden Inhaltsschwerpunkten:
 3. Die Prüfungsform heißt "praktische Tätigkeit und Fachgespräch". Sie müssen sich bis zum **23.04.2018** bei der [entsprechenden Hochschulseite](https://compass.hs-rm.de/) für die Prüfung angemeldet haben.
 4. Zum Ende des Semesters findet mit jedem Teilnehmer ein 25-minütiges Fachgespräch zu ausgewählten Problemen und Lösungen des Semesters statt.
 5. Sämtliche Emails an mich (Fragen, Probleme, etc) schickt ihr bitte an codingchallenges@jangampe.de.
+
+## Aufgabenblätter
+
+{% for post in site.categories["cc2018"] %}
+  {{ post.title }}
+{% endfor %}
