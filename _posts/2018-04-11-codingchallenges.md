@@ -18,5 +18,5 @@ Coding Challenges ist ein Vertiefungsfach mit folgenden Inhaltsschwerpunkten:
 ## Aufgabenblätter
 
 {% for post in site.categories["cc2018"] %}
-  [{{ post.title }}]({{ post.url }})
+  * [{{ post.title }}]({{ post.url }})
 {% endfor %}
