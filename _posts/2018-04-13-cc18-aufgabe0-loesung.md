@@ -87,7 +87,7 @@ Quadratzahl dieser Ebene und der Quadratzahl der vorherigen Ebene plus Eins bild
 
 Manuelle Komplexitätsanalyse:
 
-```
+``` c++
 #include <cmath>
 #include <cstdint>
 #include <iostream>
