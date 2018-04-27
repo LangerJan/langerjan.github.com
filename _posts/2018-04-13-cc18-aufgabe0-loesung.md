@@ -218,5 +218,6 @@ plot 'ergebnis.csv' with lines lw 2, 2+0.000000006*x*log(x)-2 with lines
 ```
 
 Das Ergebnis ist hier zu sehen:
+
 ![Gnuplot Komplexitätsanalyse]({{ site.url }}/assets/cc18/blatt0/ergebnis.png)
 
