@@ -1,0 +1,26 @@
+{% if page.mathjax %}
+<script type="text/x-mathjax-config">
+ MathJax.Hub.Config({
+     config: ["MMLorHTML.js"],
+     showMathMenu: false,
+     tex2jax: {
+         inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+         displayMath: [ ['$$','$$'], ['\\[','\\]'] ],
+         skipTags: ["script","noscript","style","textarea","code","pre"],
+         processClass: "tex2jax_process"
+     },
+     jax: ["input/TeX","input/MathML","output/HTML-CSS"],
+     extensions: ["tex2jax.js"],
+     TeX: {
+         extensions: [
+                      "https://www.jangampe.de/scripts/mathjax/extra/xyjax.js",
+                      "enclose.js",
+                      "color.js"]
+     },
+     "HTML-CSS": {
+         webFont: "TeX"
+     }
+ });
+</script>
+<script type="text/javascript" src="/scripts/mathjax/core/MathJax.js"></script>
+{% endif %}
