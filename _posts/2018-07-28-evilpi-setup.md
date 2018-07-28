@@ -26,4 +26,15 @@ unzip raspbian-lite.zip
 ```
 sudo dd if=./2018-06-27-raspbian-stretch-lite.img of=/dev/sdb bs=16M conv=fsync
 ``` 
+4. ```sync```, Karte raus, Karte rein, neu mounten.
+5. In der Bootpartition ein leeres File ```ssh``` anlegen, um headless arbeiten zu können
+6. ```sync```, Karte raus, Karte in den Pi
+7. Pi mit dem Router verbinden, Pi starten, IP Adresse herausfinden
+8. ```ssh pi@<IP Adresse>```
+9. Updaten, Pakete nachinstallieren:
+```
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install vim
+```
 
