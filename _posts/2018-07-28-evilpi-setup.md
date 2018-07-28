@@ -35,7 +35,7 @@ sudo dd if=./2018-06-27-raspbian-stretch-lite.img of=/dev/sdb bs=16M conv=fsync
 ```
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim bridge-utils hostapd
+sudo apt-get install vim bridge-utils hostapd dnsmasq iptables-persistent
 ```
 10. Edit /etc/network/interfaces:
 ```
@@ -58,12 +58,24 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=CCMP
 rsn_pairwise=CCMP
 ```
+
 12. Append to file ```/etc/default/hostapd```
 ```
 DAEMON_CONF="/etc/hostapd/hostapd.conf"
 ```
 
+13. Append to file ```/etc/dnsmasq.conf```
+```
+interface=br0
+dhcp-range=192.168.250.50,192.168.250.150,12h
+```
 
+14. Edit file ```/etc/sysctl.conf```
+Uncomment ```net.ipv4.ip_forward=1```
+Uncomment ```net.ipv6.conf.all.forwarding=1```
 
-
-
+15.
+```
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo dpkg-reconfigure iptables-persistent
+```
