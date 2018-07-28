@@ -35,6 +35,35 @@ sudo dd if=./2018-06-27-raspbian-stretch-lite.img of=/dev/sdb bs=16M conv=fsync
 ```
 sudo apt-get update
 sudo apt-get upgrade
-sudo apt-get install vim
+sudo apt-get install vim bridge-utils hostapd
 ```
+10. Edit /etc/network/interfaces:
+```
+auto br0
+iface br0 inet static
+  bridge_ports eth0 wlan0
+  address 192.168.250.1
+  netmask 255.255.255.0
+
+iface wlan0 inet manual
+```
+11. Edit ```/etc/hostapd/hostapd.conf```
+```
+interface=wlan0
+bridge=br0
+ssid=evilraspberry
+wpa=1
+wpa_passphrase=icanreadyouremail
+wpa_key_mgmt=WPA-PSK
+wpa_pairwise=CCMP
+rsn_pairwise=CCMP
+```
+12. Append to file ```/etc/default/hostapd```
+```
+DAEMON_CONF="/etc/hostapd/hostapd.conf"
+```
+
+
+
+
 
