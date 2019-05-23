@@ -55,8 +55,7 @@ Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig ein
 1: Spin up a temporary webserver (standalone)
 2: Place files in webroot directory (webroot)
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Select the appropriate number [1-2] then [enter] (press 'c' to cancel):
-``
+Select the appropriate number [1-2] then [enter] (press 'c' to cancel):``
 
 Hier wählen wir 1 und am Ende erhalten wir unter `/etc/letsencrypt/<meine.domain>/` ein vollwertiges Zerifikat, was von allen modernen Betriebssystemen
 akzeptiert wird \o/.
