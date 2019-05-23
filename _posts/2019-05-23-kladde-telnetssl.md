@@ -27,10 +27,12 @@ Was ihr zum Nachmachen braucht:
 
 ## NetHack besorgen
 ``sudo apt install nethack``
+
 done.
 
 ## Telnetd-SSL besorgen
 `sudo apt install telnetd-ssl`
+
 done.
 
 ## Zertifikat besorgen: LetsEncrypt
@@ -39,6 +41,7 @@ Jede SSL Verbindung braucht ein Zertifikat. Jahrelang wurden Beispiele, Hochschu
 Installiert euch [certbot](https://certbot.eff.org)! Mein Anwendungsgebiet für das Zertifikat ist kein Websever, also wähle ich
 ``I am using "None of the above" on "Debian testing/unstable"``
 und mir wird empfohlen, certbot wie folgt zu installieren:
+
 ``sudo apt install certbot``
 
 Danach starten wir certbot wie folgt:
@@ -47,8 +50,7 @@ Danach starten wir certbot wie folgt:
 
 Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig einen Webserver eröffnet, um das Zertifikat zu legitimieren:
 
-``
-How would you like to authenticate with the ACME CA?
+``How would you like to authenticate with the ACME CA?
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 1: Spin up a temporary webserver (standalone)
 2: Place files in webroot directory (webroot)
@@ -61,6 +63,7 @@ akzeptiert wird \o/.
 
 ## Service definieren
 Wir definieren Port 60123 als den Port unseres Nethack-Services in der `/etc/services` und schreiben ans Ende der Datei:
+
 ``nethackservice     60123/tcp``
 
 ## Inetd konfigurieren
