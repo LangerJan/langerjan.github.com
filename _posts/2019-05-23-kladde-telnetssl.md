@@ -50,15 +50,9 @@ Danach starten wir certbot wie folgt:
 
 Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig einen Webserver eröffnet, um das Zertifikat zu legitimieren:
 
-``How would you like to authenticate with the ACME CA?
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-1: Spin up a temporary webserver (standalone)
-2: Place files in webroot directory (webroot)
-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Select the appropriate number [1-2] then [enter] (press 'c' to cancel):``
+Wählt auf die Frage ``How would you like to authenticate with the ACME CA?`` die Antwort ``Spin up a temporary webserver (standalone)`` und gebt danach eure Domain ein.
 
-Hier wählen wir 1 und am Ende erhalten wir unter `/etc/letsencrypt/<meine.domain>/` ein vollwertiges Zerifikat, was von allen modernen Betriebssystemen
-akzeptiert wird \o/.
+Am Ende erhalten wir unter `/etc/letsencrypt/<meine.domain>/` ein vollwertiges Zerifikat, was von allen modernen Betriebssystemen akzeptiert wird \o/.
 
 ## Service definieren
 Wir definieren Port 60123 als den Port unseres Nethack-Services in der `/etc/services` und schreiben ans Ende der Datei:
