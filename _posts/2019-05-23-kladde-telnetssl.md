@@ -25,9 +25,10 @@ Was ihr zum Nachmachen braucht:
 * Einen Computer mit 
     * Internetzugang. Wenn er keine öffentliche IP hat, muss Port 80 (für HTTP) und Port 60123 (oder beliebiger Port >60000) von eurem Router weitergeleitet bekommen.
     * Debian GNU/Linux. Mein Tutorial ist Linux-spezifisch, am Beispiel von Raspbian auf einem Raspberry Pi.
-    * Nethack: `sudo apt install nethack`
+    * Nethack: 
+      ``sudo apt install nethack``
     * Telnetd-ssl: `sudo apt install telnetd-ssl`
-* Eine Domain, die auf deine IP Adresse abbildet. Im weiteren Verlauf nenne ich sie `<meine.domain>` und ihr müsst eure eigene einsetzen. Gratis dyndns
+* Eine Domain, die auf deine IP Adresse abbildet. Im weiteren Verlauf nenne ich sie `<meine.domain>` und ihr müsst eure eigene einsetzen. Gratis dyndns, mit dem das laufen sollte, gibt es beispielsweise bei afraid.org.
 
 ## Zertifikat besorgen: LetsEncrypt
 Jede SSL Verbindung braucht ein Zertifikat. Jahrelang wurden Beispiele, Hochschulseminare und Tutorials mit selbstsignierten Zertifikaten gemacht. Damit hören wir jetzt auf!
