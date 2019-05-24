@@ -33,8 +33,10 @@ Was ihr zum Nachmachen braucht:
 ## Zertifikat besorgen: LetsEncrypt
 Jede SSL Verbindung braucht ein Zertifikat. Jahrelang wurden Beispiele, Hochschulseminare und Tutorials mit selbstsignierten Zertifikaten gemacht. Damit hören wir jetzt auf!
 
-Installiert euch [certbot](https://certbot.eff.org)! Mein Anwendungsgebiet für das Zertifikat ist kein Websever, also wähle ich
+Installiert euch [certbt](https://certbot.eff.org)! Mein Anwendungsgebiet für das Zertifikat ist kein Websever, also wähle auf der Webseite die Option
+
 ``I am using "None of the above" on "Debian testing/unstable"``
+
 und mir wird empfohlen, certbot wie folgt zu installieren:
 
 ``sudo apt install certbot``
@@ -43,7 +45,7 @@ Danach starten wir certbot wie folgt:
 
 ``sudo certbot certonly``
 
-Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig einen Webserver eröffnet, um das Zertifikat zu legitimieren:
+Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig einen Webserver eröffnet, um das Zertifikat zu legitimieren.
 
 Wählt auf die Frage ``How would you like to authenticate with the ACME CA?`` die Antwort ``Spin up a temporary webserver (standalone)`` und gebt danach eure Domain ein.
 
