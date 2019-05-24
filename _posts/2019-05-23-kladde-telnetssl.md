@@ -49,7 +49,7 @@ Jetzt kommt der Grund, warum wir Port 80 brauchen: Damit Certbot kurzfristig ein
 
 Wählt auf die Frage ``How would you like to authenticate with the ACME CA?`` die Antwort ``Spin up a temporary webserver (standalone)`` und gebt danach eure Domain ein.
 
-Am Ende erhalten wir unter `/etc/letsencrypt/<meine.domain>/` ein vollwertiges Zerifikat, was von allen modernen Betriebssystemen akzeptiert wird \o/.
+Am Ende erhalten wir unter `/etc/letsencrypt/live/<meine.domain>/` ein vollwertiges Zerifikat, was von allen modernen Betriebssystemen akzeptiert wird \o/.
 
 Seit certbot v0.19.0 müssen wir uns nicht mehr darum kümmern, einen cronjob oder so etwas einzurichten, um das Zertifikat aktuell zu halten. Das macht inzwischen certbot für uns. Darum muss Port 80 aber weiterhin permanent umgeleitet bleiben.
 
