@@ -1,9 +1,11 @@
 # Lehrveranstaltungen
 
 ## Aktuelles Semester
-* [Coding Challenges](../_posts/2018-04-11-codingchallenges.md)
 
 ## Vergangene Semester
+
+### Sommersemester 2018
+* [Coding Challenges](../_posts/2018-04-11-codingchallenges.md)
 
 ### Wintersemester 2015/2016
 * Programmieren in C/C++ (Ang. Mathematik)
